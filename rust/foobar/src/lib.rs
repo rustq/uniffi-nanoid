@@ -148,6 +148,32 @@ impl BinaryOperator for SafeDivision {
     }
 }
 
+
+#[derive(uniffi::Object)]
+struct Nano {}
+
+// Makes it easy to construct from foreign code
+#[uniffi::export]
+impl Nano {
+    #[uniffi::constructor]
+    fn new() -> Self {
+        Nano {}
+    }
+}
+
+#[derive(Debug, PartialEq, thiserror::Error, uniffi::Error)]
+pub enum NanoError {
+    #[error("Cannot.")]
+    Inner
+}
+
+#[uniffi::export]
+impl Nano {
+    fn id(&self) -> Result<String, NanoError> {
+        Ok(nanoid::nanoid!())
+    }
+}
+
 // Helpers that only exist because the concrete objects above DO NOT have the requisite protocol conformances
 // stated in the glue code. It's easy to extend classes in Swift, but you can't just declare a conformance in Kotlin.
 // So, to keep things easy, we just do this as a compromise.
